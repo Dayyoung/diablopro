@@ -73,7 +73,11 @@ async function init() {
     await loadBackground();
     
     if (isMobile) {
-        setTimeout(() => switchView('right'), 500);
+        setTimeout(() => {
+            const wrap = document.getElementById('app-wrapper');
+            if (wrap) wrap.scrollLeft = 770;
+            switchView('right');
+        }, 500);
     }
 }
 
@@ -261,7 +265,17 @@ function setupEventListeners() {
     const wrapper = document.getElementById('app-wrapper');
     if (wrapper) {
         wrapper.addEventListener('scroll', () => {
-            console.log('Scroll X:', wrapper.scrollLeft);
+            const scrollX = wrapper.scrollLeft;
+            console.log('Scroll X:', scrollX);
+            
+            // Clamp scroll between 111 and 770 on mobile
+            if (window.innerWidth <= 768) {
+                if (scrollX < 111) {
+                    wrapper.scrollLeft = 111;
+                } else if (scrollX > 770) {
+                    wrapper.scrollLeft = 770;
+                }
+            }
         });
     }
 
@@ -677,14 +691,12 @@ function shareProfile() {
 
 function switchView(view) {
     const wrap = document.getElementById('app-wrapper');
-    const container = document.getElementById('app-container');
-    if (!wrap || !container) return;
+    if (!wrap) return;
     
     if (view === 'left') {
-        container.style.transform = 'translateX(0)';
+        wrap.scrollTo({ left: 111, behavior: 'smooth' });
     } else {
-        const offset = wrap.clientWidth - container.clientWidth;
-        container.style.transform = `translateX(${offset}px)`;
+        wrap.scrollTo({ left: 770, behavior: 'smooth' });
     }
 }
 
