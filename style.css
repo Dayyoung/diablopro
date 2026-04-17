@@ -665,3 +665,33 @@ body {
         z-index: 1500 !important;
     }
 }
+
+/* Fix mobile nav buttons positioning */
+@media (max-width: 768px) {
+    #mobile-nav {
+        position: fixed !important;
+        top: 50% !important;
+        left: 0 !important;
+        width: 100vw !important;
+        transform: translateY(-50%) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0 15px !important;
+        pointer-events: none !important;
+        z-index: 2005 !important;
+    }
+
+    #mobile-nav button {
+        pointer-events: auto !important;
+        opacity: 0.8 !important;
+        background: rgba(20, 20, 20, 0.8) !important;
+        border: 2px solid #ffd700 !important;
+        color: #ffd700 !important;
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
