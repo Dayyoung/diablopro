@@ -788,3 +788,32 @@ body {
         height: 60px;
     }
 }
+
+/* Full-Screen Splash Screen */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1s ease-in-out, visibility 1s;
+}
+
+#splash-screen #app-logo {
+    position: static; /* Clear fixed positioning */
+    transform: none;
+    max-width: min(600px, 90vw);
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
+}
+
+/* Center Home Button */
+#nav-home {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}

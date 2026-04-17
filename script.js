@@ -81,13 +81,13 @@ async function init() {
         }
     }
 
-    // Hide logo after 2 seconds
-    const logo = document.getElementById('app-logo');
-    if (logo) {
+    // Hide splash screen after 2 seconds
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
         setTimeout(() => {
-            logo.style.transition = 'opacity 1s ease-in-out';
-            logo.style.opacity = '0';
-            setTimeout(() => logo.style.display = 'none', 1000);
+            splash.style.opacity = '0';
+            splash.style.visibility = 'hidden';
+            setTimeout(() => splash.remove(), 1000);
         }, 2000);
     }
 }
