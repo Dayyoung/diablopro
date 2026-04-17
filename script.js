@@ -305,10 +305,15 @@ function handleSlotClick(e) {
         return;
     }
 
-    if (isEditMode) return;
-
     const slotId = slot.dataset.slotId;
     const state = slotState[slotId];
+
+    if (isEditMode) {
+        if (confirm('이 슬롯을 삭제하시겠습니까?')) {
+            removeSlotById(slotId);
+        }
+        return;
+    }
 
     if (isViewOnly) {
         if (state.uploaded) {
@@ -630,13 +635,8 @@ function toggleEditMode() {
 }
 
 function addSlot() {
-    const id = prompt('슬롯 ID를 입력하세요 (예: newSlot):');
-    if (!id) return;
-    if (SLOT_POSITIONS.find(p => p.id === id)) {
-        alert('이미 존재하는 ID입니다.');
-        return;
-    }
-
+    const id = 'item_' + Math.random().toString(36).substr(2, 9);
+    
     // Calculate height to be square in pixels (W * 2.165)
     const width = 5.0;
     const height = (width * (2436 / 1125));
@@ -646,15 +646,9 @@ function addSlot() {
     createSlots();
 }
 
-function removeSlot() {
-    const id = prompt('삭제할 슬롯 ID를 입력하세요:');
-    if (!id) return;
-
+function removeSlotById(id) {
     const index = SLOT_POSITIONS.findIndex(p => p.id === id);
-    if (index === -1) {
-        alert('존재하지 않는 슬롯입니다.');
-        return;
-    }
+    if (index === -1) return;
 
     SLOT_POSITIONS.splice(index, 1);
     delete slotState[id];
@@ -679,7 +673,6 @@ document.addEventListener('DOMContentLoaded', init);
 
 window.toggleEditMode = toggleEditMode;
 window.addSlot = addSlot;
-window.removeSlot = removeSlot;
 window.exportConfig = exportConfig;
 window.changeBackground = changeBackground;
 
