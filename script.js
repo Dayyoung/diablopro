@@ -258,7 +258,13 @@ function setupEventListeners() {
         wrapper.style.transition = 'transform 0.3s ease-in-out';
         wrapper.style.transform = direction === 'left' ? 'translateX(0)' : 'translateX(-100vw)';
     }
-    
+    const wrapper = document.getElementById('app-wrapper');
+    if (wrapper) {
+        wrapper.addEventListener('scroll', () => {
+            console.log('Scroll X:', wrapper.scrollLeft);
+        });
+    }
+
     document.addEventListener('click', handleSlotClick);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCropModal(); closeViewerModal(); } });
     document.addEventListener('mousemove', handleDrag);
