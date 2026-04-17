@@ -246,6 +246,25 @@ function createSlots() {
 
         appContainer.appendChild(slot);
     });
+
+    // Setup drag listeners if in edit mode
+    if (isEditMode) {
+        document.querySelectorAll('.slot').forEach(slot => {
+            const startHandler = e => {
+                if (!isEditMode) return;
+                // Don't preventDefault if not in edit mode or clicking buttons
+                if (e.target.closest('button')) return;
+                
+                if (e.target.classList.contains('resize-handle')) {
+                    startDrag(e, slot, 'resize');
+                } else {
+                    startDrag(e, slot, 'move');
+                }
+            };
+            slot.addEventListener('mousedown', startHandler);
+            slot.addEventListener('touchstart', startHandler, { passive: false });
+        });
+    }
 }
 
 function setupEventListeners() {
@@ -271,8 +290,14 @@ function setupEventListeners() {
 
     document.addEventListener('click', handleSlotClick);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCropModal(); closeViewerModal(); } });
+    
+    // Mouse events
     document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', stopDrag);
+    
+    // Touch events for mobile dragging
+    document.addEventListener('touchmove', handleDrag, { passive: false });
+    document.addEventListener('touchend', stopDrag);
 }
 
 function handleSlotClick(e) {
@@ -544,17 +569,24 @@ function closeViewerModal() {
     document.body.style.overflow = 'auto';
 }
 
+function getEventCoords(e) {
+    if (e.touches && e.touches.length > 0) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+}
+
 function startDrag(e, slot, type) {
     if (!isEditMode) return;
-    e.preventDefault();
-    e.stopPropagation();
-
+    
+    const coords = getEventCoords(e);
     const rect = appContainer.getBoundingClientRect();
+    
     dragState = {
         type,
         slot,
-        startX: e.clientX,
-        startY: e.clientY,
+        startX: coords.x,
+        startY: coords.y,
         startTop: parseFloat(slot.style.top),
         startLeft: parseFloat(slot.style.left),
         startWidth: parseFloat(slot.style.width),
@@ -562,15 +594,24 @@ function startDrag(e, slot, type) {
         containerWidth: rect.width,
         containerHeight: rect.height
     };
+    
+    if (e.type === 'touchstart') {
+        // Prevent scrolling while dragging on mobile
+        e.preventDefault();
+    }
 }
 
 function handleDrag(e) {
     if (!dragState) return;
 
+    // Prevent scrolling while dragging
+    if (e.cancelable) e.preventDefault();
+
+    const coords = getEventCoords(e);
     const { type, slot, startX, startY, startTop, startLeft, startWidth, startHeight, containerWidth, containerHeight } = dragState;
 
-    const deltaX = e.clientX - startX;
-    const deltaY = e.clientY - startY;
+    const deltaX = coords.x - startX;
+    const deltaY = coords.y - startY;
 
     const deltaXPercent = (deltaX / containerWidth) * 100;
     const deltaYPercent = (deltaY / containerHeight) * 100;
@@ -620,17 +661,6 @@ function toggleEditMode() {
     }
 
     createSlots();
-
-    document.querySelectorAll('.slot').forEach(slot => {
-        slot.addEventListener('mousedown', e => {
-            if (!isEditMode) return;
-            if (e.target.classList.contains('resize-handle')) {
-                startDrag(e, slot, 'resize');
-            } else {
-                startDrag(e, slot, 'move');
-            }
-        });
-    });
 }
 
 function toggleDeleteMode() {
