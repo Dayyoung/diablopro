@@ -142,6 +142,9 @@ function hideEditingUI() {
         const el = document.querySelector(sel);
         if (el) el.style.display = 'none';
     });
+    
+    const newBtn = document.getElementById('new-profile-btn');
+    if (newBtn) newBtn.style.display = 'flex';
 }
 
 sb.auth.onAuthStateChange((event, session) => {
@@ -690,6 +693,10 @@ function shareProfile() {
     });
 }
 
+function createNewProfile() {
+    window.location.href = window.location.origin + window.location.pathname;
+}
+
 function switchView(view) {
     const wrap = document.getElementById('app-wrapper');
     if (!wrap) return;
@@ -703,3 +710,4 @@ function switchView(view) {
 
 window.shareProfile = shareProfile;
 window.switchView = switchView;
+window.createNewProfile = createNewProfile;
