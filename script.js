@@ -201,7 +201,8 @@ function showFloatingPreview(slot, imageUrl) {
     document.body.appendChild(preview);
     
     const slotRect = slot.getBoundingClientRect();
-    const previewWidth = slotRect.width * 3;
+    // Use 3x slot width but ensure a minimum of 450px for readability
+    const previewWidth = Math.max(450, slotRect.width * 3);
     
     preview.style.width = `${previewWidth}px`;
     preview.style.left = `${slotRect.left + slotRect.width / 2 - previewWidth / 2}px`;
