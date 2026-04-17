@@ -749,3 +749,42 @@ body {
 #main-actions button.active-delete i {
     filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5));
 }
+
+/* Logo and Home Button Layout */
+#app-logo {
+    position: fixed;
+    top: env(safe-area-inset-top);
+    left: 50%;
+    transform: translateX(-50%);
+    height: min(80px, 15vw);
+    width: auto;
+    z-index: 2100;
+    pointer-events: none;
+    filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9));
+}
+
+/* Home button to the top left */
+#nav-home {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top) + 10px) !important;
+    left: 15px !important;
+    transform: none !important;
+    width: 45px !important;
+    height: 45px !important;
+    background: rgba(15, 15, 15, 0.8) !important;
+    border: 2px solid #ffd700 !important;
+    color: #ffd700 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2200 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+@media (max-width: 768px) {
+    #app-logo {
+        top: calc(env(safe-area-inset-top) + 5px);
+        height: 60px;
+    }
+}
