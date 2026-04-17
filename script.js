@@ -50,6 +50,7 @@ async function signInAnonymously() {
 }
 
 async function init() {
+    const isMobile = window.innerWidth <= 768;
     const urlParams = new URLSearchParams(window.location.search);
     const sharedUserId = urlParams.get('user');
     
