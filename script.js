@@ -201,13 +201,13 @@ function showFloatingPreview(slot, imageUrl) {
     document.body.appendChild(preview);
     
     const slotRect = slot.getBoundingClientRect();
-    const previewWidth = 300; // Default width
+    const previewWidth = slotRect.width * 2;
     
+    preview.style.width = `${previewWidth}px`;
     preview.style.left = `${slotRect.left + slotRect.width / 2 - previewWidth / 2}px`;
-    preview.style.top = `${slotRect.top - 10}px`;
-    preview.style.transform = 'translateY(-100%)';
+    preview.style.top = `${slotRect.bottom + 10}px`;
     
-    // Close on click outside or after delay
+    // Close on click outside
     const closePreview = () => {
         preview.classList.add('fade-out');
         setTimeout(() => preview.remove(), 200);
