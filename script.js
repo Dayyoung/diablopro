@@ -146,7 +146,8 @@ function hideEditingUI() {
         '#edit-btn', 
         '#delete-slot-btn', 
         'button[onclick="addSlot()"]', 
-        'button[onclick="changeBackground()"]'
+        'button[onclick="changeBackground()"]',
+        '#delete-btn'
     ];
     selectors.forEach(sel => {
         const el = document.querySelector(sel);
@@ -296,6 +297,7 @@ function handleSlotClick(e) {
 
     const deleteBtn = e.target.closest('.delete-btn');
     if (deleteBtn) {
+        if (isViewOnly) return;
         e.stopPropagation();
         deleteSlotImage(slot.dataset.slotId);
         return;
@@ -310,6 +312,7 @@ function handleSlotClick(e) {
     const state = slotState[slotId];
 
     if (isDeleteMode) {
+        if (isViewOnly) return;
         if (confirm('이 슬롯을 삭제하시겠습니까?')) {
             removeSlotById(slotId);
             toggleDeleteMode();
