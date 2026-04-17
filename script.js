@@ -87,11 +87,6 @@ async function loadSavedImages() {
                     const slot = document.getElementById(`slot-${row.slot_id}`);
                     if (slot) {
                         slot.classList.add('uploaded');
-                        const img = document.createElement('img');
-                        img.className = 'slot-bg';
-                        img.src = row.image_url;
-                        img.alt = 'Item';
-                        slot.appendChild(img);
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'delete-btn';
                         deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
@@ -188,11 +183,44 @@ function handleSlotClick(e) {
     const state = slotState[slotId];
 
     if (state.uploaded) {
-        openViewerModal(state.imageUrl);
+        showFloatingPreview(slot, state.imageUrl);
     } else {
         currentSlotId = slotId;
         fileInput.click();
     }
+}
+
+function showFloatingPreview(slot, imageUrl) {
+    const preview = document.createElement('div');
+    preview.className = 'floating-preview';
+    
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    preview.appendChild(img);
+    
+    document.body.appendChild(preview);
+    
+    const slotRect = slot.getBoundingClientRect();
+    const previewWidth = 300; // Default width
+    
+    preview.style.left = `${slotRect.left + slotRect.width / 2 - previewWidth / 2}px`;
+    preview.style.top = `${slotRect.top - 10}px`;
+    preview.style.transform = 'translateY(-100%)';
+    
+    // Close on click outside or after delay
+    const closePreview = () => {
+        preview.classList.add('fade-out');
+        setTimeout(() => preview.remove(), 200);
+        document.removeEventListener('click', closePreview);
+    };
+    
+    setTimeout(() => {
+        document.addEventListener('click', (e) => {
+            if (!preview.contains(e.target) && e.target !== slot) {
+                closePreview();
+            }
+        });
+    }, 10);
 }
 
 function handleFileSelect(e) {
@@ -300,18 +328,11 @@ async function uploadCroppedImage() {
         uploadBtn.disabled = false;
     }
 }
-
 function updateSlotState(slotId, imageUrl) {
     const slot = document.getElementById(`slot-${slotId}`);
     slotState[slotId] = { uploaded: true, imageUrl };
 
     slot.classList.add('uploaded');
-
-    const img = document.createElement('img');
-    img.className = 'slot-bg';
-    img.src = imageUrl;
-    img.alt = 'Item';
-    slot.appendChild(img);
 
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
