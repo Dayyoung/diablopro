@@ -630,3 +630,20 @@ body {
 #main-actions button.active-edit i {
     filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.5));
 }
+
+/* Exact 50/50 Split for Mobile */
+@media (max-width: 768px) {
+    #app-container {
+        width: 200vw !important;
+        height: 92.37vw !important; /* 200 * (1125/2436) */
+        aspect-ratio: auto !important;
+        max-width: none !important;
+        background-size: cover !important;
+    }
+    
+    #app-wrapper {
+        display: flex;
+        align-items: center; /* Center image vertically if it doesn't fill height */
+        background: #000;
+    }
+}
