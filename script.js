@@ -77,7 +77,12 @@ async function init() {
     if (isMobile) {
         const wrap = document.getElementById('app-wrapper');
         if (wrap) {
-            wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
+            // Priority: Saved ScrollX -> Center
+            if (window.savedMobileScrollX !== undefined) {
+                wrap.scrollLeft = window.savedMobileScrollX;
+            } else {
+                wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
+            }
         }
     }
 
@@ -95,47 +100,49 @@ async function init() {
 async function loadConfig() {
     if (!userId) return;
     try {
-        const { data, error } = await sb
+        // Load Slot Positions
+        const { data: posData } = await sb
             .from('user_configs')
             .select('config_data')
             .eq('user_id', userId)
             .eq('config_key', 'slot_positions')
             .single();
 
-        if (error && error.code !== 'PGRST116') {
-            console.error('Failed to load slots config:', error);
-            // Fallback: check localStorage for legacy/failover
-            const local = localStorage.getItem(`slots_${userId}`);
-            if (local) SLOT_POSITIONS = JSON.parse(local);
-            return;
+        if (posData && posData.config_data) {
+            SLOT_POSITIONS = posData.config_data;
         }
 
-        if (data && data.config_data) {
-            SLOT_POSITIONS = data.config_data;
+        // Load Mobile Scroll Position
+        const { data: scrollData } = await sb
+            .from('user_configs')
+            .select('config_data')
+            .eq('user_id', userId)
+            .eq('config_key', 'mobile_scroll_x')
+            .single();
+
+        if (scrollData && scrollData.config_data) {
+            window.savedMobileScrollX = scrollData.config_data;
         }
     } catch (err) {
         console.error('Error loading config:', err);
     }
 }
 
-async function saveConfig() {
+async function saveConfig(key = 'slot_positions', data = SLOT_POSITIONS) {
     if (!userId || isViewOnly) return;
     try {
-        // Always update localStorage as backup
-        localStorage.setItem(`slots_${userId}`, JSON.stringify(SLOT_POSITIONS));
+        if (key === 'slot_positions') {
+            localStorage.setItem(`slots_${userId}`, JSON.stringify(data));
+        }
         
-        const { error } = await sb
+        await sb
             .from('user_configs')
             .upsert({
                 user_id: userId,
-                config_key: 'slot_positions',
-                config_data: SLOT_POSITIONS,
+                config_key: key,
+                config_data: data,
                 updated_at: new Date().toISOString()
             }, { onConflict: 'user_id,config_key' });
-
-        if (error) {
-            console.error('Failed to save slots config to Supabase:', error);
-        }
     } catch (err) {
         console.error('Error saving config:', err);
     }
@@ -717,8 +724,17 @@ window.addSlot = addSlot;
 window.exportConfig = exportConfig;
 window.changeBackground = changeBackground;
 
-function shareProfile() {
+async function shareProfile() {
     if (!userId) return;
+
+    // Mobile: Save current scroll position before sharing
+    if (window.innerWidth <= 768) {
+        const wrap = document.getElementById('app-wrapper');
+        if (wrap) {
+            await saveConfig('mobile_scroll_x', wrap.scrollLeft);
+        }
+    }
+
     const url = `${window.location.origin}${window.location.pathname}?user=${userId}`;
     navigator.clipboard.writeText(url).then(() => {
         alert('공유 링크가 클립보드에 복사되었습니다.');
