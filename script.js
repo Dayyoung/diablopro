@@ -71,6 +71,10 @@ async function init() {
     setupEventListeners();
     await loadSavedImages();
     await loadBackground();
+    
+    if (isMobile) {
+        setTimeout(() => switchView('right'), 500);
+    }
 }
 
 async function loadConfig() {
@@ -244,7 +248,14 @@ function setupEventListeners() {
     document.getElementById('confirm-upload').addEventListener('click', uploadCroppedImage);
     document.getElementById('close-viewer').addEventListener('click', closeViewerModal);
     viewerModal.addEventListener('click', e => { if (e.target === viewerModal) closeViewerModal(); });
-    appContainer.addEventListener('click', handleSlotClick);
+    
+    function switchView(direction) {
+        const wrapper = document.getElementById('app-wrapper');
+        wrapper.style.transition = 'transform 0.3s ease-in-out';
+        wrapper.style.transform = direction === 'left' ? 'translateX(0)' : 'translateX(-100vw)';
+    }
+    
+    document.addEventListener('click', handleSlotClick);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCropModal(); closeViewerModal(); } });
     document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', stopDrag);
@@ -652,4 +663,18 @@ function shareProfile() {
     });
 }
 
+function switchView(view) {
+    const wrap = document.getElementById('app-wrapper');
+    const container = document.getElementById('app-container');
+    if (!wrap || !container) return;
+    
+    if (view === 'left') {
+        container.style.transform = 'translateX(0)';
+    } else {
+        const offset = wrap.clientWidth - container.clientWidth;
+        container.style.transform = `translateX(${offset}px)`;
+    }
+}
+
 window.shareProfile = shareProfile;
+window.switchView = switchView;
