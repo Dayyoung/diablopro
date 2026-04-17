@@ -201,12 +201,22 @@ function showFloatingPreview(slot, imageUrl) {
     document.body.appendChild(preview);
     
     const slotRect = slot.getBoundingClientRect();
-    // Use 3x slot width but ensure a minimum of 450px for readability
-    const previewWidth = Math.max(450, slotRect.width * 3);
+    const isMobile = window.innerWidth <= 768;
     
-    preview.style.width = `${previewWidth}px`;
-    preview.style.left = `${slotRect.left + slotRect.width / 2 - previewWidth / 2}px`;
-    preview.style.top = `${slotRect.bottom + 10}px`;
+    if (isMobile) {
+        preview.classList.add('mobile-preview');
+        // Mobile: Center in screen
+        preview.style.width = 'min(300px, 90vw)';
+        preview.style.left = '50%';
+        preview.style.top = '50%';
+        preview.style.transform = 'translate(-50%, -50%)';
+    } else {
+        // Desktop: Align below slot
+        const previewWidth = Math.max(300, slotRect.width * 3);
+        preview.style.width = `${previewWidth}px`;
+        preview.style.left = `${slotRect.left + slotRect.width / 2 - previewWidth / 2}px`;
+        preview.style.top = `${slotRect.bottom + 10}px`;
+    }
     
     // Close on click outside
     const closePreview = () => {

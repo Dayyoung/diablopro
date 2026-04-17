@@ -380,3 +380,18 @@ body {
         transform: scale(1);
     }
 }
+
+.floating-preview.mobile-preview {
+    animation: previewFadeInMobile 0.2s ease-out;
+}
+
+@keyframes previewFadeInMobile {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
