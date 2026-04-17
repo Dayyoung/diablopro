@@ -11,8 +11,9 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
+    align-items: center;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 #app-container {
@@ -23,7 +24,8 @@ body {
     background-image: url('back.png');
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center top;
+    background-position: center center;
+    margin: auto;
 }
 
 .slot {
@@ -694,4 +696,12 @@ body {
         align-items: center !important;
         justify-content: center !important;
     }
+}
+
+/* Ensure app-wrapper also centers contents */
+#app-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
 }
