@@ -477,3 +477,52 @@ body {
         border-width: 1px;
     }
 }
+
+/* Final Mobile Polish */
+@media (max-width: 768px) {
+    #main-actions {
+        top: auto !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 12px 10px !important;
+        background: rgba(10, 10, 10, 0.9) !important;
+        backdrop-filter: blur(5px);
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        gap: 8px !important;
+        border-top: 1px solid #333;
+        z-index: 1001 !important;
+    }
+
+    #main-actions button {
+        flex: 0 0 auto;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    #mobile-nav {
+        bottom: 80px !important;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 20px;
+        pointer-events: none;
+    }
+    
+    #mobile-nav button {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.6) !important;
+        border-color: rgba(255, 215, 0, 0.5) !important;
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    #app-container {
+        background-size: contain !important;
+        background-position: center center !important;
+    }
+}
