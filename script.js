@@ -74,10 +74,8 @@ async function init() {
     await loadBackground();
     
     if (isMobile) {
-        setTimeout(() => {
-            const wrap = document.getElementById('app-wrapper');
-            if (wrap) wrap.scrollLeft = 440;
-        }, 500);
+        const wrap = document.getElementById('app-wrapper');
+        if (wrap) wrap.scrollLeft = 440;
     }
 }
 
