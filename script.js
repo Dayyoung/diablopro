@@ -255,6 +255,7 @@ function closeCropModal() {
     cropModal.style.display = 'none';
     if (currentCropper) { currentCropper.destroy(); currentCropper = null; }
     cropImage.src = '';
+    isBackgroundMode = false;
 }
 
 async function uploadCroppedImage() {
