@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diablo 2 Item Profile Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container"></div>
+
+    <div style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:10px;">
+        <button id="edit-btn" onclick="toggleEditMode()" style="padding:10px 20px;background:#ffd700;color:#1a1a1a;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+            <i class="fas fa-edit"></i> 위치 조정
+        </button>
+        <button onclick="addSlot()" style="padding:10px 20px;background:#3b82f6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+            <i class="fas fa-plus"></i> 추가
+        </button>
+        <button onclick="removeSlot()" style="padding:10px 20px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+            <i class="fas fa-trash"></i> 삭제
+        </button>
+    </div>
+
+    <div id="edit-instructions" style="position:fixed;bottom:10px;left:10px;z-index:999;background:rgba(0,0,0,0.9);color:#fff;padding:15px;border-radius:8px;font-size:12px;max-width:320px;display:none;">
+        <strong>🖱️ 드래그로 조절:</strong><br>
+        • 상자 드래그 → 위치 이동<br>
+        • 우측 하단 사각형 → 크기 조절<br>
+        • 변경 시 Console에 좌표 출력<br>
+        • <code>exportConfig()</code> → 전체 설정 복사
+    </div>
+
+    <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+    <div id="crop-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-crop-alt"></i> 이미지 크롭</h2>
+                <button class="close-modal" id="close-crop">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="crop-image" src="" alt="Crop preview">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancel-crop">
+                    <i class="fas fa-times"></i> 취소
+                </button>
+                <button class="btn btn-upload" id="confirm-upload">
+                    <i class="fas fa-upload"></i> 업로드
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewer-modal" class="modal viewer-modal">
+        <span class="viewer-close" id="close-viewer">&times;</span>
+        <img id="viewer-image" class="viewer-content" src="" alt="Preview">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
