@@ -55,12 +55,12 @@ async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     const shareCode = urlParams.get('s');
     const sharedUserId = urlParams.get('user'); // legacy fallback
-    
+
     if (shareCode) {
         // The share code encodes userId in first 8 chars (hex prefix of UUID)
         // Format: [8-char userId prefix][4-char timestamp][3-char random] all uppercase
         const userPrefix = shareCode.slice(0, 8).toLowerCase();
-        
+
         // Always enter view-only mode when ?s= is present
         isViewOnly = true;
         window.sharedVersion = Date.now();
@@ -100,7 +100,7 @@ async function init() {
                     userId = imgData.user_id;
                     resolved = true;
                 }
-            } catch(e) { /* no results */ }
+            } catch (e) { /* no results */ }
         }
 
         if (!resolved) {
@@ -119,13 +119,13 @@ async function init() {
         if (sb && sb.auth) await sb.auth.signOut();
         userId = await signInAnonymously();
     }
-    
+
     await loadConfig();
     await loadSavedImages();
     createSlots();
     setupEventListeners();
     await loadBackground();
-    
+
     if (isMobile) {
         const wrap = document.getElementById('app-wrapper');
         if (wrap) {
@@ -186,7 +186,7 @@ async function saveConfig(key = 'slot_positions', data = SLOT_POSITIONS) {
         if (key === 'slot_positions') {
             localStorage.setItem(`slots_${userId}`, JSON.stringify(data));
         }
-        
+
         await sb
             .from('user_configs')
             .upsert({
@@ -202,9 +202,9 @@ async function saveConfig(key = 'slot_positions', data = SLOT_POSITIONS) {
 
 function hideEditingUI() {
     const selectors = [
-        '#edit-btn', 
-        '#delete-slot-btn', 
-        'button[onclick="addSlot()"]', 
+        '#edit-btn',
+        '#delete-slot-btn',
+        'button[onclick="addSlot()"]',
         'button[onclick="changeBackground()"]',
         '#delete-btn'
     ];
@@ -212,7 +212,7 @@ function hideEditingUI() {
         const el = document.querySelector(sel);
         if (el) el.style.display = 'none';
     });
-    
+
     const newBtn = document.getElementById('new-profile-btn');
     if (newBtn) newBtn.style.display = 'flex';
 }
@@ -226,7 +226,7 @@ sb.auth.onAuthStateChange((event, session) => {
 
 async function loadSavedImages() {
     if (!userId) return;
-    
+
     try {
         const { data, error } = await sb
             .from('user_slot_images')
@@ -318,7 +318,7 @@ function createSlots() {
                 if (!isEditMode) return;
                 // Don't preventDefault if not in edit mode or clicking buttons
                 if (e.target.closest('button')) return;
-                
+
                 if (e.target.classList.contains('resize-handle')) {
                     startDrag(e, slot, 'resize');
                 } else {
@@ -338,7 +338,7 @@ function setupEventListeners() {
     document.getElementById('confirm-upload').addEventListener('click', uploadCroppedImage);
     document.getElementById('close-viewer').addEventListener('click', closeViewerModal);
     viewerModal.addEventListener('click', e => { if (e.target === viewerModal) closeViewerModal(); });
-    
+
     function switchView(direction) {
         const wrapper = document.getElementById('app-wrapper');
         wrapper.style.transition = 'transform 0.3s ease-in-out';
@@ -354,11 +354,11 @@ function setupEventListeners() {
 
     document.addEventListener('click', handleSlotClick);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCropModal(); closeViewerModal(); } });
-    
+
     // Mouse events
     document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', stopDrag);
-    
+
     // Touch events for mobile dragging
     document.addEventListener('touchmove', handleDrag, { passive: false });
     document.addEventListener('touchend', stopDrag);
@@ -413,7 +413,7 @@ function handleSlotClick(e) {
 function showFloatingPreview(slot, slotId, imageUrl) {
     const preview = document.createElement('div');
     preview.className = 'floating-preview';
-    
+
     const img = document.createElement('img');
     img.src = imageUrl;
     preview.appendChild(img);
@@ -425,19 +425,17 @@ function showFloatingPreview(slot, slotId, imageUrl) {
         delBtn.title = '이미지 삭제';
         delBtn.onclick = async (e) => {
             e.stopPropagation();
-            if (confirm('이 이미지를 삭제하시겠습니까?')) {
-                await deleteSlotImage(slotId);
-                preview.remove();
-            }
+            await deleteSlotImage(slotId);
+            preview.remove();
         };
         preview.appendChild(delBtn);
     }
-    
+
     document.body.appendChild(preview);
-    
+
     const slotRect = slot.getBoundingClientRect();
     const isMobile = window.innerWidth <= 768;
-    
+
     if (isMobile) {
         preview.classList.add('mobile-preview');
         // Mobile: Center in screen
@@ -452,14 +450,14 @@ function showFloatingPreview(slot, slotId, imageUrl) {
         preview.style.left = `${slotRect.left + slotRect.width / 2 - previewWidth / 2}px`;
         preview.style.top = `${slotRect.bottom + 10}px`;
     }
-    
+
     // Close on click outside
     const closePreview = () => {
         preview.classList.add('fade-out');
         setTimeout(() => preview.remove(), 200);
         document.removeEventListener('click', closePreview);
     };
-    
+
     setTimeout(() => {
         document.addEventListener('click', (e) => {
             if (!preview.contains(e.target) && e.target !== slot) {
@@ -663,10 +661,10 @@ function getEventCoords(e) {
 
 function startDrag(e, slot, type) {
     if (!isEditMode) return;
-    
+
     const coords = getEventCoords(e);
     const rect = appContainer.getBoundingClientRect();
-    
+
     dragState = {
         type,
         slot,
@@ -679,7 +677,7 @@ function startDrag(e, slot, type) {
         containerWidth: rect.width,
         containerHeight: rect.height
     };
-    
+
     if (e.type === 'touchstart') {
         // Prevent scrolling while dragging on mobile
         e.preventDefault();
@@ -761,11 +759,11 @@ function toggleDeleteMode() {
 
 function addSlot() {
     const id = 'item_' + Math.random().toString(36).substr(2, 9);
-    
+
     // Calculate height to be square in pixels (W * 2.165)
     const width = 5.0;
     const height = (width * (2436 / 1125));
-    
+
     SLOT_POSITIONS.push({ id, top: 40, left: 40, width, height, isNew: true });
     saveConfig();
     createSlots();
@@ -820,7 +818,7 @@ async function shareProfile() {
     // Save the short code mapping in user_configs (best-effort, table may not exist)
     try {
         await saveConfig(`share_${code}`, { version, scroll_x: scrollX });
-    } catch(e) { /* ignore if table doesn't exist */ }
+    } catch (e) { /* ignore if table doesn't exist */ }
 
     const url = `${window.location.origin}${window.location.pathname}?s=${code}`;
     navigator.clipboard.writeText(url).then(() => {
@@ -837,7 +835,7 @@ function createNewProfile() {
 function switchView(view) {
     const wrap = document.getElementById('app-wrapper');
     if (!wrap) return;
-    
+
     if (view === 'left') {
         wrap.scrollBy({ left: -wrap.clientWidth, behavior: 'smooth' });
     } else if (view === 'home') {

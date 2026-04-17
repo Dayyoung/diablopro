@@ -351,7 +351,7 @@ body {
 }
 .floating-preview {
     position: fixed;
-    z-index: 1000;
+    z-index: 2147483647;
     pointer-events: none;
     animation: previewFadeIn 0.2s ease-out;
     background: #000;
@@ -839,6 +839,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     transition: all 0.2s ease;
     z-index: 2200;
+    pointer-events: auto;
 }
 
 .preview-delete-btn:hover {
