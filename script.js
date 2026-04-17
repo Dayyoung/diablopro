@@ -80,6 +80,16 @@ async function init() {
             wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
         }
     }
+
+    // Hide logo after 2 seconds
+    const logo = document.getElementById('app-logo');
+    if (logo) {
+        setTimeout(() => {
+            logo.style.transition = 'opacity 1s ease-in-out';
+            logo.style.opacity = '0';
+            setTimeout(() => logo.style.display = 'none', 1000);
+        }, 2000);
+    }
 }
 
 async function loadConfig() {
