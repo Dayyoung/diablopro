@@ -236,14 +236,6 @@ function createSlots() {
         // Restore state
         if (slotState[slotData.id] && slotState[slotData.id].uploaded) {
             slot.classList.add('uploaded');
-
-            if (!isViewOnly) {
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                deleteBtn.title = '이미지 삭제';
-                slot.appendChild(deleteBtn);
-            }
         } else {
             slotState[slotData.id] = { uploaded: false, imageUrl: null };
         }
@@ -316,26 +308,41 @@ function handleSlotClick(e) {
 
     if (isViewOnly) {
         if (state.uploaded) {
-            showFloatingPreview(slot, state.imageUrl);
+            showFloatingPreview(slot, slotId, state.imageUrl);
         }
         return;
     }
 
     if (state.uploaded) {
-        showFloatingPreview(slot, state.imageUrl);
+        showFloatingPreview(slot, slotId, state.imageUrl);
     } else {
         currentSlotId = slotId;
         fileInput.click();
     }
 }
 
-function showFloatingPreview(slot, imageUrl) {
+function showFloatingPreview(slot, slotId, imageUrl) {
     const preview = document.createElement('div');
     preview.className = 'floating-preview';
     
     const img = document.createElement('img');
     img.src = imageUrl;
     preview.appendChild(img);
+
+    if (!isViewOnly) {
+        const delBtn = document.createElement('button');
+        delBtn.className = 'preview-delete-btn';
+        delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        delBtn.title = '이미지 삭제';
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (confirm('이 이미지를 삭제하시겠습니까?')) {
+                deleteSlotImage(slotId);
+                preview.remove();
+            }
+        };
+        preview.appendChild(delBtn);
+    }
     
     document.body.appendChild(preview);
     
@@ -481,14 +488,7 @@ async function uploadCroppedImage() {
 function updateSlotState(slotId, imageUrl) {
     const slot = document.getElementById(`slot-${slotId}`);
     slotState[slotId] = { uploaded: true, imageUrl };
-
     slot.classList.add('uploaded');
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-    deleteBtn.title = '이미지 삭제';
-    slot.appendChild(deleteBtn);
 }
 
 async function saveImageToSupabase(slotId, imageUrl) {
