@@ -670,13 +670,15 @@ function shareProfile() {
 }
 
 function switchView(view) {
+    const wrap = document.getElementById('app-wrapper');
     const container = document.getElementById('app-container');
-    if (!container) return;
+    if (!wrap || !container) return;
     
     if (view === 'left') {
         container.style.transform = 'translateX(0)';
     } else {
-        container.style.transform = 'translateX(-50%)';
+        const offset = wrap.clientWidth - container.clientWidth;
+        container.style.transform = `translateX(${offset}px)`;
     }
 }
 
