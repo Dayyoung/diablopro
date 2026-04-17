@@ -705,3 +705,11 @@ body {
     align-items: center !important;
     min-height: 100vh !important;
 }
+
+/* Fix mobile scroll overflow - ensure left side is reachable */
+@media (max-width: 768px) {
+    #app-wrapper {
+        justify-content: flex-start !important;
+        align-items: center !important;
+    }
+}
