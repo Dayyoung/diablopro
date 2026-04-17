@@ -58,7 +58,8 @@ async function init() {
     if (sharedUserId) {
         userId = sharedUserId;
         isViewOnly = true;
-        setTimeout(hideEditingUI, 0); // Wait for DOM if needed, though script is at end
+        window.sharedVersion = urlParams.get('v') || Date.now();
+        setTimeout(hideEditingUI, 0);
     } else {
         const { data: { session } } = await sb.auth.getSession();
         if (session?.user) {
@@ -187,10 +188,10 @@ async function loadSavedImages() {
         }
 
         if (data && data.length > 0) {
-            const cacheBust = `?t=${Date.now()}`;
+            // Use version from URL (or current time) to bust any CDN/browser cache on image URLs
+            const cacheBust = `?t=${window.sharedVersion || Date.now()}`;
             data.forEach(row => {
                 if (row.slot_id && row.image_url) {
-                    // Append cache-busting timestamp so latest image always loads
                     const freshUrl = row.image_url.split('?')[0] + cacheBust;
                     slotState[row.slot_id] = { uploaded: true, imageUrl: freshUrl };
                 }
@@ -731,6 +732,10 @@ window.changeBackground = changeBackground;
 async function shareProfile() {
     if (!userId) return;
 
+    // Save current timestamp as version so viewers always get the most up-to-date data
+    const version = Date.now();
+    await saveConfig('version', version);
+
     // Mobile: Save current scroll position before sharing
     if (window.innerWidth <= 768) {
         const wrap = document.getElementById('app-wrapper');
@@ -739,7 +744,7 @@ async function shareProfile() {
         }
     }
 
-    const url = `${window.location.origin}${window.location.pathname}?user=${userId}`;
+    const url = `${window.location.origin}${window.location.pathname}?user=${userId}&v=${version}`;
     navigator.clipboard.writeText(url).then(() => {
         alert('공유 링크가 클립보드에 복사되었습니다.');
     }).catch(err => {
