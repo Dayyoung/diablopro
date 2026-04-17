@@ -76,8 +76,7 @@ async function init() {
     if (isMobile) {
         setTimeout(() => {
             const wrap = document.getElementById('app-wrapper');
-            if (wrap) wrap.scrollLeft = 770;
-            switchView('right');
+            if (wrap) wrap.scrollLeft = 440;
         }, 500);
     }
 }
