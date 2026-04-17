@@ -81,14 +81,14 @@ async function init() {
         }
     }
 
-    // Hide splash screen after 2 seconds
+    // Hide splash screen after 1.5 seconds
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
             splash.style.opacity = '0';
             splash.style.visibility = 'hidden';
             setTimeout(() => splash.remove(), 1000);
-        }, 2000);
+        }, 1500);
     }
 }
 
@@ -749,7 +749,11 @@ window.shareProfile = shareProfile;
 window.switchView = switchView;
 window.createNewProfile = createNewProfile;
 
-function createNewProfile() {
-    // Redirect to root without URL parameters to start a fresh personal profile
+async function createNewProfile() {
+    // Force a new anonymous session by signing out first
+    if (sb && sb.auth) {
+        await sb.auth.signOut();
+    }
+    // Redirect to root without URL parameters
     window.location.href = window.location.origin + window.location.pathname;
 }
