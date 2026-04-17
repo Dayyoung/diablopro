@@ -233,12 +233,9 @@ function createSlots() {
             slot.appendChild(handle);
         }
 
-        // Restore state and images
+        // Restore state
         if (slotState[slotData.id] && slotState[slotData.id].uploaded) {
             slot.classList.add('uploaded');
-            slot.style.backgroundImage = `url('${slotState[slotData.id].imageUrl}')`;
-            slot.style.backgroundSize = 'cover';
-            slot.style.backgroundPosition = 'center';
 
             if (!isViewOnly) {
                 const deleteBtn = document.createElement('button');

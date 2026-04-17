@@ -47,13 +47,15 @@ body {
 }
 
 .slot.uploaded {
-    background-color: rgba(0, 0, 255, 0.4);
-    border-color: #4488ff;
+    background-color: rgba(255, 215, 0, 0.2);
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
 .slot.uploaded:hover {
-    background-color: rgba(0, 0, 255, 0.6);
-    border-color: #66aaff;
+    background-color: rgba(255, 215, 0, 0.4);
+    border-color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
 }
 
 .slot-bg {
