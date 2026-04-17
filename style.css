@@ -630,3 +630,27 @@ body {
 #main-actions button.active-edit i {
     filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.5));
 }
+
+/* Native horizontal scroll for mobile */
+@media (max-width: 768px) {
+    #app-wrapper {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-snap-type: none !important;
+        display: block !important;
+    }
+
+    #app-container {
+        display: block !important;
+        transform: none !important; /* Disable manual paging */
+        transition: none !important;
+    }
+
+    /* Hide arrows if touch scroll is preferred, 
+       but keeping them might be good as fallback. 
+       User said "Make it move with touch", so arrows might be redundant. */
+    #mobile-nav {
+        display: none !important;
+    }
+}
