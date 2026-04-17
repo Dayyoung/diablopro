@@ -143,7 +143,18 @@ function createSlots() {
             slot.appendChild(handle);
         }
 
-        slotState[slotData.id] = { uploaded: false, imageUrl: null };
+        // Preserve existing state if available, otherwise initialize
+        if (!slotState[slotData.id]) {
+            slotState[slotData.id] = { uploaded: false, imageUrl: null };
+        } else if (slotState[slotData.id].uploaded) {
+            slot.classList.add('uploaded');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+            deleteBtn.title = '이미지 삭제';
+            slot.appendChild(deleteBtn);
+        }
+        
         appContainer.appendChild(slot);
     });
 }
