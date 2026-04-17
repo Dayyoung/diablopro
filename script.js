@@ -685,12 +685,12 @@ function switchView(view) {
     if (!wrap) return;
     
     if (view === 'left') {
-        wrap.scrollTo({ left: 110, behavior: 'smooth' });
+        wrap.scrollBy({ left: -wrap.clientWidth, behavior: 'smooth' });
     } else if (view === 'home') {
         const center = (wrap.scrollWidth - wrap.clientWidth) / 2;
         wrap.scrollTo({ left: center, behavior: 'smooth' });
     } else {
-        wrap.scrollTo({ left: 770, behavior: 'smooth' });
+        wrap.scrollBy({ left: wrap.clientWidth, behavior: 'smooth' });
     }
 }
 
