@@ -526,3 +526,35 @@ body {
         background-position: center center !important;
     }
 }
+
+/* Center navigation arrows vertically on mobile */
+@media (max-width: 768px) {
+    #mobile-nav {
+        top: 50% !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 100vw !important;
+        padding: 0 10px !important;
+        pointer-events: none;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    #mobile-nav button {
+        pointer-events: auto;
+        opacity: 0.6;
+    }
+    
+    #app-wrapper {
+        background: #000;
+    }
+    
+    /* Ensure no margins/padding on mobile to remove black areas */
+    body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        overflow: hidden;
+    }
+}
