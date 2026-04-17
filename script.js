@@ -240,8 +240,8 @@ async function uploadCroppedImage() {
     uploadBtn.disabled = true;
 
     try {
-        const canvas = currentCropper.getCroppedCanvas({ maxWidth: 512, maxHeight: 512, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+        const canvas = currentCropper.getCroppedCanvas({ maxWidth: 2048, maxHeight: 2048, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 1.0));
         const formData = new FormData();
         formData.append('image', blob);
 
