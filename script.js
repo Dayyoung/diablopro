@@ -239,12 +239,13 @@ async function loadSavedImages() {
         }
 
         if (data && data.length > 0) {
-            // Use version from URL (or current time) to bust any CDN/browser cache on image URLs
             const cacheBust = `?t=${window.sharedVersion || Date.now()}`;
             data.forEach(row => {
                 if (row.slot_id && row.image_url) {
-                    const freshUrl = row.image_url.split('?')[0] + cacheBust;
-                    slotState[row.slot_id] = { uploaded: true, imageUrl: freshUrl };
+                    // stored as "imageUrl" or "imageUrl||deleteHash"
+                    const [rawUrl, deleteHash] = row.image_url.split('||');
+                    const freshUrl = rawUrl.split('?')[0] + cacheBust;
+                    slotState[row.slot_id] = { uploaded: true, imageUrl: freshUrl, deleteHash: deleteHash || null };
                 }
             });
         }
@@ -553,13 +554,16 @@ async function uploadCroppedImage() {
 
         if (data.success) {
             const imageUrl = data.data.url;
+            const deleteHash = data.data.deletehash || '';
+            // Store "imageUrl||deleteHash" so we can delete from imgBB later
+            const storedValue = deleteHash ? `${imageUrl}||${deleteHash}` : imageUrl;
             if (isBackgroundMode) {
                 appContainer.style.backgroundImage = `url('${imageUrl}')`;
-                await saveImageToSupabase('background', imageUrl);
+                await saveImageToSupabase('background', storedValue);
                 isBackgroundMode = false;
             } else {
                 updateSlotState(currentSlotId, imageUrl);
-                await saveImageToSupabase(currentSlotId, imageUrl);
+                await saveImageToSupabase(currentSlotId, storedValue);
             }
             closeCropModal();
         } else {
@@ -604,8 +608,10 @@ async function saveImageToSupabase(slotId, imageUrl) {
 async function deleteSlotImage(slotId) {
     if (!userId) return;
     const slot = document.getElementById(`slot-${slotId}`);
-    slotState[slotId] = { uploaded: false, imageUrl: null };
+    const currentState = slotState[slotId];
+    const deleteHash = currentState?.deleteHash;
 
+    slotState[slotId] = { uploaded: false, imageUrl: null };
     if (slot) {
         slot.classList.remove('uploaded');
         slot.style.backgroundImage = '';
@@ -613,6 +619,18 @@ async function deleteSlotImage(slotId) {
         slot.querySelector('.delete-btn')?.remove();
     }
 
+    // Delete from imgBB if we have a deleteHash
+    if (deleteHash) {
+        try {
+            await fetch(`https://api.imgbb.com/1/image/${deleteHash}?key=${IMGBB_API_KEY}`, {
+                method: 'DELETE'
+            });
+        } catch (e) {
+            console.warn('imgBB delete failed (non-critical):', e);
+        }
+    }
+
+    // Delete from Supabase
     try {
         const { error } = await sb
             .from('user_slot_images')
