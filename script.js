@@ -75,7 +75,9 @@ async function init() {
     
     if (isMobile) {
         const wrap = document.getElementById('app-wrapper');
-        if (wrap) wrap.scrollLeft = 440;
+        if (wrap) {
+            wrap.scrollLeft = (wrap.scrollWidth - wrap.clientWidth) / 2;
+        }
     }
 }
 
