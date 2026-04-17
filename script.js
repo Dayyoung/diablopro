@@ -33,6 +33,7 @@ const viewerImage = document.getElementById('viewer-image');
 let currentCropper = null;
 let currentSlotId = null;
 let isEditMode = false;
+let isBackgroundMode = false;
 let dragState = null;
 
 async function signInAnonymously() {
@@ -55,6 +56,7 @@ async function init() {
     createSlots();
     setupEventListeners();
     await loadSavedImages();
+    await loadBackground();
 }
 
 sb.auth.onAuthStateChange((event, session) => {
@@ -101,6 +103,29 @@ async function loadSavedImages() {
         }
     } catch (err) {
         console.error('Error loading saved images:', err);
+    }
+}
+
+async function loadBackground() {
+    if (!userId) return;
+    try {
+        const { data, error } = await sb
+            .from('user_slot_images')
+            .select('image_url')
+            .eq('user_id', userId)
+            .eq('slot_id', 'background')
+            .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 is 'no rows'
+            console.error('Failed to load background:', error);
+            return;
+        }
+
+        if (data && data.image_url) {
+            appContainer.style.backgroundImage = `url('${data.image_url}')`;
+        }
+    } catch (err) {
+        console.error('Error loading background:', err);
     }
 }
 
@@ -254,8 +279,14 @@ async function uploadCroppedImage() {
 
         if (data.success) {
             const imageUrl = data.data.url;
-            updateSlotState(currentSlotId, imageUrl);
-            await saveImageToSupabase(currentSlotId, imageUrl);
+            if (isBackgroundMode) {
+                appContainer.style.backgroundImage = `url('${imageUrl}')`;
+                await saveImageToSupabase('background', imageUrl);
+                isBackgroundMode = false;
+            } else {
+                updateSlotState(currentSlotId, imageUrl);
+                await saveImageToSupabase(currentSlotId, imageUrl);
+            }
             closeCropModal();
         } else {
             throw new Error(data.error?.message || '업로드 실패');
@@ -466,9 +497,15 @@ function exportConfig() {
     console.log('];');
 }
 
+function changeBackground() {
+    isBackgroundMode = true;
+    fileInput.click();
+}
+
 document.addEventListener('DOMContentLoaded', init);
 
 window.toggleEditMode = toggleEditMode;
 window.addSlot = addSlot;
 window.removeSlot = removeSlot;
 window.exportConfig = exportConfig;
+window.changeBackground = changeBackground;
