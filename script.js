@@ -748,3 +748,8 @@ function switchView(view) {
 window.shareProfile = shareProfile;
 window.switchView = switchView;
 window.createNewProfile = createNewProfile;
+
+function createNewProfile() {
+    // Redirect to root without URL parameters to start a fresh personal profile
+    window.location.href = window.location.origin + window.location.pathname;
+}
