@@ -272,16 +272,14 @@ function setupEventListeners() {
             const scrollX = wrapper.scrollLeft;
             console.log('Scroll X:', scrollX);
             
-            /*
-            // Clamp scroll between 111 and 770 on mobile
+            // Clamp scroll between 110 and 770 on mobile
             if (window.innerWidth <= 768) {
-                if (scrollX < 111) {
-                    wrapper.scrollLeft = 111;
+                if (scrollX < 110) {
+                    wrapper.scrollLeft = 110;
                 } else if (scrollX > 770) {
                     wrapper.scrollLeft = 770;
                 }
             }
-            */
         });
     }
 
@@ -697,7 +695,7 @@ function switchView(view) {
     if (!wrap) return;
     
     if (view === 'left') {
-        wrap.scrollTo({ left: 111, behavior: 'smooth' });
+        wrap.scrollTo({ left: 110, behavior: 'smooth' });
     } else {
         wrap.scrollTo({ left: 770, behavior: 'smooth' });
     }
