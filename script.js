@@ -235,8 +235,11 @@ function createSlots() {
                 deleteBtn.title = '이미지 삭제';
                 slot.appendChild(deleteBtn);
             }
+        if (slotData.isNew) {
+            slot.classList.add('new-slot');
+            delete slotData.isNew;
         }
-        
+
         appContainer.appendChild(slot);
     });
 }
@@ -611,7 +614,11 @@ function addSlot() {
         return;
     }
 
-    SLOT_POSITIONS.push({ id, top: 50, left: 50, width: 6, height: 6 });
+    // Calculate height to be square in pixels (W * 2.165)
+    const width = 5.0;
+    const height = (width * (2436 / 1125));
+    
+    SLOT_POSITIONS.push({ id, top: 40, left: 40, width, height, isNew: true });
     saveConfig();
     createSlots();
 }
