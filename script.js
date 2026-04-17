@@ -610,7 +610,7 @@ function toggleEditMode() {
         btn.innerHTML = '<i class="fas fa-check"></i><span>완료</span>';
         btn.classList.add('active-edit');
     } else {
-        btn.innerHTML = '<i class="fas fa-edit"></i><span>위치</span>';
+        btn.innerHTML = '<i class="fas fa-edit"></i><span>수정</span>';
         btn.classList.remove('active-edit');
     }
 
