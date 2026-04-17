@@ -693,6 +693,8 @@ function switchView(view) {
     
     if (view === 'left') {
         wrap.scrollTo({ left: 110, behavior: 'smooth' });
+    } else if (view === 'home') {
+        wrap.scrollTo({ left: 440, behavior: 'smooth' });
     } else {
         wrap.scrollTo({ left: 770, behavior: 'smooth' });
     }
