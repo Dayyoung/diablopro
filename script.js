@@ -69,9 +69,9 @@ async function init() {
     }
     
     await loadConfig();
+    await loadSavedImages();
     createSlots();
     setupEventListeners();
-    await loadSavedImages();
     await loadBackground();
     
     if (isMobile) {
@@ -183,15 +183,6 @@ async function loadSavedImages() {
             data.forEach(row => {
                 if (row.slot_id && row.image_url) {
                     slotState[row.slot_id] = { uploaded: true, imageUrl: row.image_url };
-                    const slot = document.getElementById(`slot-${row.slot_id}`);
-                    if (slot) {
-                        slot.classList.add('uploaded');
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'delete-btn';
-                        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                        deleteBtn.title = '이미지 삭제';
-                        slot.appendChild(deleteBtn);
-                    }
                 }
             });
         }
@@ -242,11 +233,13 @@ function createSlots() {
             slot.appendChild(handle);
         }
 
-        // Preserve existing state if available, otherwise initialize
-        if (!slotState[slotData.id]) {
-            slotState[slotData.id] = { uploaded: false, imageUrl: null };
-        } else if (slotState[slotData.id].uploaded) {
+        // Restore state and images
+        if (slotState[slotData.id] && slotState[slotData.id].uploaded) {
             slot.classList.add('uploaded');
+            slot.style.backgroundImage = `url('${slotState[slotData.id].imageUrl}')`;
+            slot.style.backgroundSize = 'cover';
+            slot.style.backgroundPosition = 'center';
+
             if (!isViewOnly) {
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
@@ -254,6 +247,8 @@ function createSlots() {
                 deleteBtn.title = '이미지 삭제';
                 slot.appendChild(deleteBtn);
             }
+        } else {
+            slotState[slotData.id] = { uploaded: false, imageUrl: null };
         }
         if (slotData.isNew) {
             slot.classList.add('new-slot');
