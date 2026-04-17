@@ -741,3 +741,11 @@ body {
         padding-top: 5px !important;
     }
 }
+
+#main-actions button.active-delete {
+    color: #ef4444 !important; /* Red for delete mode */
+}
+
+#main-actions button.active-delete i {
+    filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5));
+}

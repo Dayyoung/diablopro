@@ -36,6 +36,7 @@ const viewerImage = document.getElementById('viewer-image');
 let currentCropper = null;
 let currentSlotId = null;
 let isEditMode = false;
+let isDeleteMode = false;
 let isBackgroundMode = false;
 let isViewOnly = false;
 let dragState = null;
@@ -298,12 +299,15 @@ function handleSlotClick(e) {
     const slotId = slot.dataset.slotId;
     const state = slotState[slotId];
 
-    if (isEditMode) {
+    if (isDeleteMode) {
         if (confirm('이 슬롯을 삭제하시겠습니까?')) {
             removeSlotById(slotId);
+            toggleDeleteMode();
         }
         return;
     }
+
+    if (isEditMode) return;
 
     if (isViewOnly) {
         if (state.uploaded) {
@@ -624,6 +628,17 @@ function toggleEditMode() {
     });
 }
 
+function toggleDeleteMode() {
+    isDeleteMode = !isDeleteMode;
+    const btn = document.getElementById('delete-btn');
+    if (isDeleteMode) {
+        btn.classList.add('active-delete');
+        if (isEditMode) toggleEditMode();
+    } else {
+        btn.classList.remove('active-delete');
+    }
+}
+
 function addSlot() {
     const id = 'item_' + Math.random().toString(36).substr(2, 9);
     
@@ -662,6 +677,7 @@ function changeBackground() {
 document.addEventListener('DOMContentLoaded', init);
 
 window.toggleEditMode = toggleEditMode;
+window.toggleDeleteMode = toggleDeleteMode;
 window.addSlot = addSlot;
 window.exportConfig = exportConfig;
 window.changeBackground = changeBackground;
