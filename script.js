@@ -268,15 +268,6 @@ function setupEventListeners() {
         wrapper.addEventListener('scroll', () => {
             const scrollX = wrapper.scrollLeft;
             console.log('Scroll X:', scrollX);
-            
-            // Clamp scroll between 110 and 770 on mobile
-            if (window.innerWidth <= 768) {
-                if (scrollX < 110) {
-                    wrapper.scrollLeft = 110;
-                } else if (scrollX > 770) {
-                    wrapper.scrollLeft = 770;
-                }
-            }
         });
     }
 
@@ -694,7 +685,8 @@ function switchView(view) {
     if (view === 'left') {
         wrap.scrollTo({ left: 110, behavior: 'smooth' });
     } else if (view === 'home') {
-        wrap.scrollTo({ left: 440, behavior: 'smooth' });
+        const center = (wrap.scrollWidth - wrap.clientWidth) / 2;
+        wrap.scrollTo({ left: center, behavior: 'smooth' });
     } else {
         wrap.scrollTo({ left: 770, behavior: 'smooth' });
     }

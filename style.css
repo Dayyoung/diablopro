@@ -725,3 +725,10 @@ body {
         z-index: 2100 !important;
     }
 }
+
+/* Absolute top for Home button */
+@media (max-width: 768px) {
+    #nav-home {
+        top: 10px !important;
+    }
+}
