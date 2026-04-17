@@ -115,12 +115,9 @@ async function init() {
         window.sharedVersion = urlParams.get('v') || Date.now();
         setTimeout(hideEditingUI, 0);
     } else {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session?.user) {
-            userId = session.user.id;
-        } else {
-            userId = await signInAnonymously();
-        }
+        // No params: always reset → fresh anonymous session every visit
+        if (sb && sb.auth) await sb.auth.signOut();
+        userId = await signInAnonymously();
     }
     
     await loadConfig();
