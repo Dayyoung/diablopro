@@ -7,7 +7,8 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const IMGBB_API_KEY = 'd7b8dcedc0328822f564b2f8907c486c';
 const IMGBB_API_URL = 'https://api.imgbb.com/1/upload';
 
-const SLOT_POSITIONS = [
+// Default Slot Positions (will be overridden if user has custom config)
+let DEFAULT_SLOT_POSITIONS = [
     { id: 'weapon', top: 13.0, left: 64.8, width: 5.3, height: 20.0 },
     { id: 'helm', top: 9.8, left: 74.2, width: 5.1, height: 10.4 },
     { id: 'armor', top: 23.0, left: 74.1, width: 5.3, height: 15.4 },
@@ -19,6 +20,8 @@ const SLOT_POSITIONS = [
     { id: 'gloves', top: 36.6, left: 64.9, width: 5.2, height: 10.0 },
     { id: 'boots', top: 35.6, left: 83.5, width: 5.1, height: 10.6 },
 ];
+
+let SLOT_POSITIONS = [...DEFAULT_SLOT_POSITIONS];
 
 const slotState = {};
 let userId = null;
@@ -34,6 +37,7 @@ let currentCropper = null;
 let currentSlotId = null;
 let isEditMode = false;
 let isBackgroundMode = false;
+let isViewOnly = false;
 let dragState = null;
 
 async function signInAnonymously() {
@@ -46,17 +50,89 @@ async function signInAnonymously() {
 }
 
 async function init() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user) {
-        userId = session.user.id;
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedUserId = urlParams.get('user');
+    
+    if (sharedUserId) {
+        userId = sharedUserId;
+        isViewOnly = true;
+        setTimeout(hideEditingUI, 0); // Wait for DOM if needed, though script is at end
     } else {
-        userId = await signInAnonymously();
+        const { data: { session } } = await sb.auth.getSession();
+        if (session?.user) {
+            userId = session.user.id;
+        } else {
+            userId = await signInAnonymously();
+        }
     }
     
+    await loadConfig();
     createSlots();
     setupEventListeners();
     await loadSavedImages();
     await loadBackground();
+}
+
+async function loadConfig() {
+    if (!userId) return;
+    try {
+        const { data, error } = await sb
+            .from('user_configs')
+            .select('config_data')
+            .eq('user_id', userId)
+            .eq('config_key', 'slot_positions')
+            .single();
+
+        if (error && error.code !== 'PGRST116') {
+            console.error('Failed to load slots config:', error);
+            // Fallback: check localStorage for legacy/failover
+            const local = localStorage.getItem(`slots_${userId}`);
+            if (local) SLOT_POSITIONS = JSON.parse(local);
+            return;
+        }
+
+        if (data && data.config_data) {
+            SLOT_POSITIONS = data.config_data;
+        }
+    } catch (err) {
+        console.error('Error loading config:', err);
+    }
+}
+
+async function saveConfig() {
+    if (!userId || isViewOnly) return;
+    try {
+        // Always update localStorage as backup
+        localStorage.setItem(`slots_${userId}`, JSON.stringify(SLOT_POSITIONS));
+        
+        const { error } = await sb
+            .from('user_configs')
+            .upsert({
+                user_id: userId,
+                config_key: 'slot_positions',
+                config_data: SLOT_POSITIONS,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id,config_key' });
+
+        if (error) {
+            console.error('Failed to save slots config to Supabase:', error);
+        }
+    } catch (err) {
+        console.error('Error saving config:', err);
+    }
+}
+
+function hideEditingUI() {
+    const selectors = [
+        '#edit-btn', 
+        '#delete-slot-btn', 
+        'button[onclick="addSlot()"]', 
+        'button[onclick="changeBackground()"]'
+    ];
+    selectors.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) el.style.display = 'none';
+    });
 }
 
 sb.auth.onAuthStateChange((event, session) => {
@@ -148,11 +224,13 @@ function createSlots() {
             slotState[slotData.id] = { uploaded: false, imageUrl: null };
         } else if (slotState[slotData.id].uploaded) {
             slot.classList.add('uploaded');
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-            deleteBtn.title = '이미지 삭제';
-            slot.appendChild(deleteBtn);
+            if (!isViewOnly) {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+                deleteBtn.title = '이미지 삭제';
+                slot.appendChild(deleteBtn);
+            }
         }
         
         appContainer.appendChild(slot);
@@ -192,6 +270,13 @@ function handleSlotClick(e) {
 
     const slotId = slot.dataset.slotId;
     const state = slotState[slotId];
+
+    if (isViewOnly) {
+        if (state.uploaded) {
+            showFloatingPreview(slot, state.imageUrl);
+        }
+        return;
+    }
 
     if (state.uploaded) {
         showFloatingPreview(slot, state.imageUrl);
@@ -474,6 +559,7 @@ function stopDrag() {
 
     console.log(`{ id: '${id}', top: ${pos.top.toFixed(1)}, left: ${pos.left.toFixed(1)}, width: ${pos.width.toFixed(1)}, height: ${pos.height.toFixed(1)} },`);
 
+    saveConfig(); // Save after repositioning/resizing
     dragState = null;
 }
 
@@ -515,6 +601,7 @@ function addSlot() {
     }
 
     SLOT_POSITIONS.push({ id, top: 50, left: 50, width: 6, height: 6 });
+    saveConfig();
     createSlots();
 }
 
@@ -530,6 +617,7 @@ function removeSlot() {
 
     SLOT_POSITIONS.splice(index, 1);
     delete slotState[id];
+    saveConfig();
     createSlots();
 }
 
@@ -553,3 +641,15 @@ window.addSlot = addSlot;
 window.removeSlot = removeSlot;
 window.exportConfig = exportConfig;
 window.changeBackground = changeBackground;
+
+function shareProfile() {
+    if (!userId) return;
+    const url = `${window.location.origin}${window.location.pathname}?user=${userId}`;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('공유 링크가 클립보드에 복사되었습니다.');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+
+window.shareProfile = shareProfile;
