@@ -235,6 +235,7 @@ function createSlots() {
                 deleteBtn.title = '이미지 삭제';
                 slot.appendChild(deleteBtn);
             }
+        }
         if (slotData.isNew) {
             slot.classList.add('new-slot');
             delete slotData.isNew;
