@@ -272,6 +272,7 @@ function setupEventListeners() {
             const scrollX = wrapper.scrollLeft;
             console.log('Scroll X:', scrollX);
             
+            /*
             // Clamp scroll between 111 and 770 on mobile
             if (window.innerWidth <= 768) {
                 if (scrollX < 111) {
@@ -280,6 +281,7 @@ function setupEventListeners() {
                     wrapper.scrollLeft = 770;
                 }
             }
+            */
         });
     }
 
