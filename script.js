@@ -187,12 +187,16 @@ async function loadSavedImages() {
         }
 
         if (data && data.length > 0) {
+            const cacheBust = `?t=${Date.now()}`;
             data.forEach(row => {
                 if (row.slot_id && row.image_url) {
-                    slotState[row.slot_id] = { uploaded: true, imageUrl: row.image_url };
+                    // Append cache-busting timestamp so latest image always loads
+                    const freshUrl = row.image_url.split('?')[0] + cacheBust;
+                    slotState[row.slot_id] = { uploaded: true, imageUrl: freshUrl };
                 }
             });
         }
+
     } catch (err) {
         console.error('Error loading saved images:', err);
     }
