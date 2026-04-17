@@ -57,25 +57,57 @@ async function init() {
     const sharedUserId = urlParams.get('user'); // legacy fallback
     
     if (shareCode) {
-        // Look up the short code in user_configs
-        const { data } = await sb
-            .from('user_configs')
-            .select('user_id, config_data')
-            .eq('config_key', `share_${shareCode}`)
-            .single();
+        // The share code encodes userId in first 8 chars (hex prefix of UUID)
+        // Format: [8-char userId prefix][4-char timestamp][3-char random] all uppercase
+        const userPrefix = shareCode.slice(0, 8).toLowerCase();
+        
+        // Always enter view-only mode when ?s= is present
+        isViewOnly = true;
+        window.sharedVersion = Date.now();
+        setTimeout(hideEditingUI, 0);
 
-        if (data) {
-            userId = data.user_id;
-            isViewOnly = true;
-            window.sharedVersion = data.config_data?.version || Date.now();
-            if (isMobile && data.config_data?.scroll_x !== undefined) {
-                window.savedMobileScrollX = data.config_data.scroll_x;
+        // Try to look up the full userId and version from user_configs
+        let resolved = false;
+        try {
+            const { data } = await sb
+                .from('user_configs')
+                .select('user_id, config_data')
+                .eq('config_key', `share_${shareCode}`)
+                .single();
+
+            if (data) {
+                userId = data.user_id;
+                window.sharedVersion = data.config_data?.version || Date.now();
+                if (isMobile && data.config_data?.scroll_x !== undefined) {
+                    window.savedMobileScrollX = data.config_data.scroll_x;
+                }
+                resolved = true;
             }
-            setTimeout(hideEditingUI, 0);
-        } else {
-            // Invalid code, treat as new session
-            userId = await signInAnonymously();
+        } catch (e) { /* table may not exist */ }
+
+        if (!resolved) {
+            // Fallback: reconstruct userId by finding user whose UUID starts with userPrefix
+            // Try to find the user in user_slot_images table
+            try {
+                const { data: imgData } = await sb
+                    .from('user_slot_images')
+                    .select('user_id')
+                    .ilike('user_id', `${userPrefix}%`)
+                    .limit(1)
+                    .single();
+
+                if (imgData) {
+                    userId = imgData.user_id;
+                    resolved = true;
+                }
+            } catch(e) { /* no results */ }
         }
+
+        if (!resolved) {
+            // Truly invalid code - still stay in view-only but show empty
+            userId = `00000000-0000-0000-0000-000000000000`;
+        }
+
     } else if (sharedUserId) {
         // Legacy ?user= support
         userId = sharedUserId;
@@ -754,8 +786,9 @@ window.changeBackground = changeBackground;
 async function shareProfile() {
     if (!userId) return;
 
-    // Generate 7-char short code: base36 timestamp tail + random
-    const code = (Date.now().toString(36).slice(-4) + Math.random().toString(36).substr(2, 3)).toUpperCase();
+    // Generate code: 8-char userId hex prefix + 4-char timestamp + 3-char random
+    const userPrefix = userId.replace(/-/g, '').slice(0, 8).toUpperCase();
+    const code = userPrefix + Date.now().toString(36).slice(-4).toUpperCase() + Math.random().toString(36).substr(2, 3).toUpperCase();
     const version = Date.now();
 
     // Collect scroll position if on mobile
@@ -765,11 +798,10 @@ async function shareProfile() {
         if (wrap) scrollX = wrap.scrollLeft;
     }
 
-    // Save the short code mapping in user_configs
-    await saveConfig(`share_${code}`, {
-        version,
-        scroll_x: scrollX
-    });
+    // Save the short code mapping in user_configs (best-effort, table may not exist)
+    try {
+        await saveConfig(`share_${code}`, { version, scroll_x: scrollX });
+    } catch(e) { /* ignore if table doesn't exist */ }
 
     const url = `${window.location.origin}${window.location.pathname}?s=${code}`;
     navigator.clipboard.writeText(url).then(() => {
