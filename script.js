@@ -425,10 +425,10 @@ function showFloatingPreview(slot, slotId, imageUrl) {
         delBtn.className = 'preview-delete-btn';
         delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
         delBtn.title = '이미지 삭제';
-        delBtn.onclick = (e) => {
+        delBtn.onclick = async (e) => {
             e.stopPropagation();
             if (confirm('이 이미지를 삭제하시겠습니까?')) {
-                deleteSlotImage(slotId);
+                await deleteSlotImage(slotId);
                 preview.remove();
             }
         };
@@ -609,16 +609,20 @@ async function deleteSlotImage(slotId) {
     const slot = document.getElementById(`slot-${slotId}`);
     slotState[slotId] = { uploaded: false, imageUrl: null };
 
-    slot.classList.remove('uploaded');
-    slot.querySelector('.slot-bg')?.remove();
-    slot.querySelector('.delete-btn')?.remove();
+    if (slot) {
+        slot.classList.remove('uploaded');
+        slot.style.backgroundImage = '';
+        slot.querySelector('.slot-bg')?.remove();
+        slot.querySelector('.delete-btn')?.remove();
+    }
 
     try {
-        await sb
+        const { error } = await sb
             .from('user_slot_images')
             .delete()
             .eq('user_id', userId)
             .eq('slot_id', slotId);
+        if (error) console.error('DB delete error:', error);
     } catch (err) {
         console.error('Error deleting image:', err);
     }
