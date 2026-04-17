@@ -732,3 +732,12 @@ body {
         top: 10px !important;
     }
 }
+
+/* True absolute top for Home button with safe area support */
+@media (max-width: 768px) {
+    #nav-home {
+        top: 0 !important;
+        margin-top: env(safe-area-inset-top) !important;
+        padding-top: 5px !important;
+    }
+}
