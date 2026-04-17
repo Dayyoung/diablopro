@@ -53,9 +53,31 @@ async function signInAnonymously() {
 async function init() {
     const isMobile = window.innerWidth <= 768;
     const urlParams = new URLSearchParams(window.location.search);
-    const sharedUserId = urlParams.get('user');
+    const shareCode = urlParams.get('s');
+    const sharedUserId = urlParams.get('user'); // legacy fallback
     
-    if (sharedUserId) {
+    if (shareCode) {
+        // Look up the short code in user_configs
+        const { data } = await sb
+            .from('user_configs')
+            .select('user_id, config_data')
+            .eq('config_key', `share_${shareCode}`)
+            .single();
+
+        if (data) {
+            userId = data.user_id;
+            isViewOnly = true;
+            window.sharedVersion = data.config_data?.version || Date.now();
+            if (isMobile && data.config_data?.scroll_x !== undefined) {
+                window.savedMobileScrollX = data.config_data.scroll_x;
+            }
+            setTimeout(hideEditingUI, 0);
+        } else {
+            // Invalid code, treat as new session
+            userId = await signInAnonymously();
+        }
+    } else if (sharedUserId) {
+        // Legacy ?user= support
         userId = sharedUserId;
         isViewOnly = true;
         window.sharedVersion = urlParams.get('v') || Date.now();
@@ -732,23 +754,28 @@ window.changeBackground = changeBackground;
 async function shareProfile() {
     if (!userId) return;
 
-    // Save current timestamp as version so viewers always get the most up-to-date data
+    // Generate 7-char short code: base36 timestamp tail + random
+    const code = (Date.now().toString(36).slice(-4) + Math.random().toString(36).substr(2, 3)).toUpperCase();
     const version = Date.now();
-    await saveConfig('version', version);
 
-    // Mobile: Save current scroll position before sharing
+    // Collect scroll position if on mobile
+    let scrollX = undefined;
     if (window.innerWidth <= 768) {
         const wrap = document.getElementById('app-wrapper');
-        if (wrap) {
-            await saveConfig('mobile_scroll_x', wrap.scrollLeft);
-        }
+        if (wrap) scrollX = wrap.scrollLeft;
     }
 
-    const url = `${window.location.origin}${window.location.pathname}?user=${userId}&v=${version}`;
+    // Save the short code mapping in user_configs
+    await saveConfig(`share_${code}`, {
+        version,
+        scroll_x: scrollX
+    });
+
+    const url = `${window.location.origin}${window.location.pathname}?s=${code}`;
     navigator.clipboard.writeText(url).then(() => {
-        alert('공유 링크가 클립보드에 복사되었습니다.');
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
+        alert(`공유 링크가 클립보드에 복사되었습니다.\n\n${url}`);
+    }).catch(() => {
+        prompt('아래 링크를 복사하세요:', url);
     });
 }
 
