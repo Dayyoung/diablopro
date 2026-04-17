@@ -584,13 +584,11 @@ function toggleEditMode() {
     const instructions = document.getElementById('edit-instructions');
 
     if (isEditMode) {
-        btn.innerHTML = '<i class="fas fa-check"></i> 편집 완료';
-        btn.style.background = '#22c55e';
-        instructions.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-check"></i><span>완료</span>';
+        btn.classList.add('active-edit');
     } else {
-        btn.innerHTML = '<i class="fas fa-edit"></i> 위치 조정';
-        btn.style.background = '#ffd700';
-        instructions.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-edit"></i><span>위치</span>';
+        btn.classList.remove('active-edit');
     }
 
     createSlots();
