@@ -806,8 +806,7 @@ async function shareProfile() {
     const urlParams = new URLSearchParams(window.location.search);
     const existingShareCode = urlParams.get('s');
 
-    // In share mode (existing s= param), reuse the current share code
-    if (existingShareCode) {
+    if (isViewOnly && existingShareCode) {
         const currentUrl = `${window.location.origin}${window.location.pathname}?s=${existingShareCode}`;
         navigator.clipboard.writeText(currentUrl).then(() => {
             alert(`공유 링크가 클립보드에 복사되었습니다.\n\n${currentUrl}`);
@@ -816,8 +815,6 @@ async function shareProfile() {
         });
         return;
     }
-
-    // Generate new code only when not in share mode
     const userPrefix = userId.replace(/-/g, '').slice(0, 8).toUpperCase();
     const code = userPrefix + Date.now().toString(36).slice(-4).toUpperCase() + Math.random().toString(36).substr(2, 3).toUpperCase();
     const version = Date.now();
