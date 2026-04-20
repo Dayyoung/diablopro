@@ -803,7 +803,21 @@ window.changeBackground = changeBackground;
 async function shareProfile() {
     if (!userId) return;
 
-    // Generate code: 8-char userId hex prefix + 4-char timestamp + 3-char random
+    const urlParams = new URLSearchParams(window.location.search);
+    const existingShareCode = urlParams.get('s');
+
+    // In share mode (existing s= param), reuse the current share code
+    if (existingShareCode) {
+        const currentUrl = `${window.location.origin}${window.location.pathname}?s=${existingShareCode}`;
+        navigator.clipboard.writeText(currentUrl).then(() => {
+            alert(`공유 링크가 클립보드에 복사되었습니다.\n\n${currentUrl}`);
+        }).catch(() => {
+            prompt('아래 링크를 복사하세요:', currentUrl);
+        });
+        return;
+    }
+
+    // Generate new code only when not in share mode
     const userPrefix = userId.replace(/-/g, '').slice(0, 8).toUpperCase();
     const code = userPrefix + Date.now().toString(36).slice(-4).toUpperCase() + Math.random().toString(36).substr(2, 3).toUpperCase();
     const version = Date.now();

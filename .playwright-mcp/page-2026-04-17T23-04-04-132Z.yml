@@ -1,0 +1,26 @@
+- generic [ref=e1]:
+  - button "" [ref=e3]:
+    - generic [ref=e4]: 
+  - text:  
+  - generic [ref=e7]:
+    - button " 배경" [active] [ref=e8] [cursor=pointer]:
+      - generic [ref=e9]: 
+      - generic [ref=e10]: 배경
+    - button " 수정" [ref=e11] [cursor=pointer]:
+      - generic [ref=e12]: 
+      - generic [ref=e13]: 수정
+    - button "+ 추가" [ref=e14] [cursor=pointer]:
+      - generic [ref=e15]: +
+      - generic [ref=e16]: 추가
+    - button " 삭제" [ref=e17] [cursor=pointer]:
+      - generic [ref=e18]: 
+      - generic [ref=e19]: 삭제
+    - text: 
+    - button " 공유" [ref=e20] [cursor=pointer]:
+      - generic [ref=e21]: 
+      - generic [ref=e22]: 공유
+  - text:   
+  - generic:
+    - img
+    - button "":
+      - generic: 

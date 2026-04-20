@@ -1,0 +1,3 @@
+[     835ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://ylriklajmfkqfrmtulyg.supabase.co/rest/v1/user_configs?select=config_data&user_id=eq.cca62e5e-29d9-4292-a679-b69a1adc36a7&config_key=eq.slot_positions:0
+[    1049ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://ylriklajmfkqfrmtulyg.supabase.co/rest/v1/user_configs?select=config_data&user_id=eq.cca62e5e-29d9-4292-a679-b69a1adc36a7&config_key=eq.mobile_scroll_x:0
+[    1550ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://ylriklajmfkqfrmtulyg.supabase.co/rest/v1/user_slot_images?select=image_url&user_id=eq.cca62e5e-29d9-4292-a679-b69a1adc36a7&slot_id=eq.background:0

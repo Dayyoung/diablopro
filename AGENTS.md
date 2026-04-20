@@ -1,6 +1,10 @@
+
+매번 작업이 끝나면 깃에 푸시해줘.
+
 # diabloapp - Agent Instructions
 
 ## Project Status
+
 
 **New/Empty project** - This directory has no files yet. Start fresh following the conventions below.
 
@@ -47,3 +51,4 @@ When setting up this project:
 ## Notes
 
 <!-- TODO: Add project-specific notes as development progresses -->
+

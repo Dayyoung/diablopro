@@ -1,0 +1,4 @@
+[     121ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:9001/favicon.ico:0
+[     640ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://ylriklajmfkqfrmtulyg.supabase.co/rest/v1/user_configs?select=config_data&user_id=eq.66131b4b-2582-4c1c-b963-8549ec77ab68&config_key=eq.slot_positions:0
+[     862ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://ylriklajmfkqfrmtulyg.supabase.co/rest/v1/user_configs?select=config_data&user_id=eq.66131b4b-2582-4c1c-b963-8549ec77ab68&config_key=eq.mobile_scroll_x:0
+[    1366ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://ylriklajmfkqfrmtulyg.supabase.co/rest/v1/user_slot_images?select=image_url&user_id=eq.66131b4b-2582-4c1c-b963-8549ec77ab68&slot_id=eq.background:0
