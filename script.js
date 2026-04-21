@@ -806,7 +806,7 @@ async function shareProfile() {
     const urlParams = new URLSearchParams(window.location.search);
     const existingShareCode = urlParams.get('s');
 
-    if (isViewOnly && existingShareCode) {
+    if (existingShareCode) {
         const currentUrl = `${window.location.origin}${window.location.pathname}?s=${existingShareCode}`;
         navigator.clipboard.writeText(currentUrl).then(() => {
             alert(`공유 링크가 클립보드에 복사되었습니다.\n\n${currentUrl}`);
@@ -815,18 +815,30 @@ async function shareProfile() {
         });
         return;
     }
+
+    const storedCode = localStorage.getItem(`share_code_${userId}`);
+    if (storedCode) {
+        const url = `${window.location.origin}${window.location.pathname}?s=${storedCode}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert(`공유 링크가 클립보드에 복사되었습니다.\n\n${url}`);
+        }).catch(() => {
+            prompt('아래 링크를 복사하세요:', url);
+        });
+        return;
+    }
+
     const userPrefix = userId.replace(/-/g, '').slice(0, 8).toUpperCase();
     const code = userPrefix + Date.now().toString(36).slice(-4).toUpperCase() + Math.random().toString(36).substr(2, 3).toUpperCase();
     const version = Date.now();
 
-    // Collect scroll position if on mobile
+    localStorage.setItem(`share_code_${userId}`, code);
+
     let scrollX = undefined;
     if (window.innerWidth <= 768) {
         const wrap = document.getElementById('app-wrapper');
         if (wrap) scrollX = wrap.scrollLeft;
     }
 
-    // Save the short code mapping in user_configs (best-effort, table may not exist)
     try {
         await saveConfig(`share_${code}`, { version, scroll_x: scrollX });
     } catch (e) { /* ignore if table doesn't exist */ }
