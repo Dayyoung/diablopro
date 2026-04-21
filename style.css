@@ -314,23 +314,44 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 32px;
-    height: 32px;
     background: rgba(255, 215, 0, 0.6);
     cursor: se-resize;
     opacity: 0.9;
     border-top-left-radius: 4px;
 }
 
-.slot.edit-mode .resize-handle::before {
-    content: '';
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    width: 12px;
-    height: 12px;
-    border-right: 2px solid #1a1a1a;
-    border-bottom: 2px solid #1a1a1a;
+@media (max-width: 768px) {
+    .slot.edit-mode .resize-handle {
+        width: 32px;
+        height: 32px;
+    }
+    .slot.edit-mode .resize-handle::before {
+        content: '';
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        width: 12px;
+        height: 12px;
+        border-right: 2px solid #1a1a1a;
+        border-bottom: 2px solid #1a1a1a;
+    }
+}
+
+@media (min-width: 769px) {
+    .slot.edit-mode .resize-handle {
+        width: 16px;
+        height: 16px;
+    }
+    .slot.edit-mode .resize-handle::before {
+        content: '';
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        width: 6px;
+        height: 6px;
+        border-right: 2px solid #1a1a1a;
+        border-bottom: 2px solid #1a1a1a;
+    }
 }
 
 @media (max-width: 768px) {
