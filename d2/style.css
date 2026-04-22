@@ -1,0 +1,871 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+#app-container {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    aspect-ratio: 2436 / 1125;
+    background-image: url('back.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: auto;
+}
+
+.slot {
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0.4);
+    border: 1px solid #ff4444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.slot:hover {
+    background-color: rgba(255, 0, 0, 0.6);
+    border-color: #ff6666;
+    transform: scale(1.02);
+}
+
+.slot.uploaded {
+    background-color: rgba(0, 100, 255, 0.05);
+    border: 2px solid #0066ff;
+    box-shadow: none;
+}
+
+.slot.uploaded:hover {
+    background-color: rgba(0, 100, 255, 0.15);
+    border-color: #0088ff;
+}
+
+.slot-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 0, 0, 0.8);
+    border: 1px solid #ff4444;
+    border-radius: 3px;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.slot.uploaded:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    background-color: #ff2222;
+    transform: scale(1.1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    border: 1px solid #444;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(90deg, #333, #2a2a2a);
+    border-bottom: 1px solid #444;
+}
+
+.modal-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.modal-header h2 i {
+    margin-right: 8px;
+    color: #ffd700;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #ff4444;
+}
+
+.modal-body {
+    padding: 20px;
+    height: 50vh;
+    min-height: 300px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1a1a1a;
+}
+
+.modal-body img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+
+.cropper-container {
+    touch-action: none !important;
+}
+
+.cropper-view-box,
+.cropper-face {
+    touch-action: none;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(90deg, #2a2a2a, #333);
+    border-top: 1px solid #444;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-cancel {
+    background: #444;
+    color: #e0e0e0;
+}
+
+.btn-cancel:hover {
+    background: #555;
+}
+
+.btn-upload {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #1a1a1a;
+}
+
+.btn-upload:hover {
+    background: linear-gradient(135deg, #ffe44d, #ffa31a);
+    transform: translateY(-1px);
+}
+
+.viewer-modal {
+    background-color: rgba(0, 0, 0, 0.95);
+}
+
+.viewer-content {
+    margin: auto;
+    display: block;
+    width: 18%;
+    height: 18%;
+    object-fit: contain;
+    animation: zoomIn 0.2s ease;
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.viewer-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 1001;
+}
+
+.viewer-close:hover {
+    color: #ffd700;
+}
+
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 3px solid transparent;
+    border-top-color: #ffd700;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.slot.edit-mode {
+    border: 2px dashed #ffd700;
+    background-color: rgba(255, 215, 0, 0.2);
+    cursor: move;
+    z-index: 100;
+}
+
+.slot.edit-mode:hover {
+    background-color: rgba(255, 215, 0, 0.4);
+    transform: none;
+}
+
+.slot.edit-mode .resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 215, 0, 0.6);
+    cursor: se-resize;
+    opacity: 0.9;
+    border-top-left-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .slot.edit-mode .resize-handle {
+        width: 32px;
+        height: 32px;
+    }
+    .slot.edit-mode .resize-handle::before {
+        content: '';
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        width: 12px;
+        height: 12px;
+        border-right: 2px solid #1a1a1a;
+        border-bottom: 2px solid #1a1a1a;
+    }
+}
+
+@media (min-width: 769px) {
+    .slot.edit-mode .resize-handle {
+        width: 16px;
+        height: 16px;
+    }
+    .slot.edit-mode .resize-handle::before {
+        content: '';
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        width: 6px;
+        height: 6px;
+        border-right: 2px solid #1a1a1a;
+        border-bottom: 2px solid #1a1a1a;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-width: none;
+    }
+
+    .modal-body {
+        padding: 10px;
+    }
+
+    .delete-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+}
+.floating-preview {
+    position: fixed;
+    z-index: 2147483647;
+    pointer-events: none;
+    animation: previewFadeIn 0.2s ease-out;
+    background: #000;
+    border: 2px solid #4488ff;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+}
+
+.floating-preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+.floating-preview.fade-out {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+@keyframes previewFadeIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.95);
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+}
+
+.floating-preview.mobile-preview {
+    animation: previewFadeInMobile 0.2s ease-out;
+}
+
+@keyframes previewFadeInMobile {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+#app-wrapper {
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+    position: relative;
+}
+
+.mobile-only {
+    display: none;
+}
+
+#mobile-nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    gap: 40px;
+}
+
+#mobile-nav button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .mobile-only {
+        display: flex;
+    }
+
+    #app-wrapper {
+        height: 100vh;
+        width: 100vw;
+    }
+
+    #app-container {
+        height: 100%;
+        width: auto;
+        aspect-ratio: 2436 / 1125;
+        max-width: none;
+        background-size: cover;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+/* New slot visual effect */
+.new-slot {
+    animation: slotPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 3px solid #ffd700 !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+@keyframes slotPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        border-width: 1px;
+    }
+}
+
+/* Final Mobile Polish */
+@media (max-width: 768px) {
+    #main-actions {
+        top: auto !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 12px 10px !important;
+        background: rgba(10, 10, 10, 0.9) !important;
+        backdrop-filter: blur(5px);
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        gap: 8px !important;
+        border-top: 1px solid #333;
+        z-index: 1001 !important;
+    }
+
+    #main-actions button {
+        flex: 0 0 auto;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    #mobile-nav {
+        bottom: 80px !important;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 20px;
+        pointer-events: none;
+    }
+    
+    #mobile-nav button {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.6) !important;
+        border-color: rgba(255, 215, 0, 0.5) !important;
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    #app-container {
+        background-size: contain !important;
+        background-position: center center !important;
+    }
+}
+
+/* Center navigation arrows vertically on mobile */
+@media (max-width: 768px) {
+    #mobile-nav {
+        top: 50% !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 100vw !important;
+        padding: 0 10px !important;
+        pointer-events: none;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    #mobile-nav button {
+        pointer-events: auto;
+        opacity: 0.6;
+    }
+    
+    #app-wrapper {
+        background: #000;
+    }
+    
+    /* Ensure no margins/padding on mobile to remove black areas */
+    body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        overflow: hidden;
+    }
+}
+
+/* Premium Mobile-App Style Bottom Navigation */
+#main-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 10px 0 calc(env(safe-area-inset-bottom) + 10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 2000;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+}
+
+#main-actions button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent !important;
+    border: none !important;
+    color: #a0a0a0 !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 4px;
+    width: 20%;
+    outline: none;
+}
+
+#main-actions button i {
+    font-size: 20px !important;
+}
+
+#main-actions button span {
+    font-size: 10px !important;
+    font-weight: 600;
+}
+
+#main-actions button:hover {
+    color: #ffd700 !important;
+}
+
+#main-actions button:active {
+    transform: scale(0.9);
+}
+
+#main-actions button.active, 
+#main-actions button#edit-btn[style*="background: rgb(34, 197, 94)"] {
+    color: #22c55e !important;
+}
+
+#app-wrapper {
+    padding-bottom: 90px;
+}
+
+@media (max-width: 768px) {
+    #mobile-nav {
+        bottom: 120px !important;
+    }
+}
+
+#main-actions button.active-edit {
+    color: #22c55e !important;
+}
+
+#main-actions button.active-edit i {
+    filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.5));
+}
+
+/* Native horizontal scroll for mobile */
+@media (max-width: 768px) {
+    #app-wrapper {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-snap-type: none !important;
+        display: block !important;
+    }
+
+    #app-container {
+        display: block !important;
+        transform: none !important; /* Disable manual paging */
+        transition: none !important;
+    }
+
+    /* Hide arrows if touch scroll is preferred, 
+       but keeping them might be good as fallback. 
+       User said "Make it move with touch", so arrows might be redundant. */
+    #mobile-nav {
+        display: none !important;
+    }
+}
+
+/* Re-enable and position mobile navigation buttons */
+@media (max-width: 768px) {
+    #mobile-nav {
+        display: flex !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        /* Ensure it's above the scroll area but below modal */
+        z-index: 1500 !important;
+    }
+}
+
+/* Fix mobile nav buttons positioning */
+@media (max-width: 768px) {
+    #mobile-nav {
+        position: fixed !important;
+        top: 50% !important;
+        left: 0 !important;
+        width: 100vw !important;
+        transform: translateY(-50%) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0 15px !important;
+        pointer-events: none !important;
+        z-index: 2005 !important;
+    }
+
+    #mobile-nav button {
+        pointer-events: auto !important;
+        opacity: 0.8 !important;
+        background: rgba(20, 20, 20, 0.8) !important;
+        border: 2px solid #ffd700 !important;
+        color: #ffd700 !important;
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* Ensure app-wrapper also centers contents */
+#app-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+}
+
+/* Fix mobile scroll overflow - ensure left side is reachable */
+@media (max-width: 768px) {
+    #app-wrapper {
+        justify-content: flex-start !important;
+        align-items: center !important;
+    }
+}
+
+/* Mobile Home Button Position */
+@media (max-width: 768px) {
+    #nav-home {
+        position: fixed !important;
+        top: 25px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        pointer-events: auto !important;
+        z-index: 2100 !important;
+    }
+}
+
+/* Absolute top for Home button */
+@media (max-width: 768px) {
+    #nav-home {
+        top: 10px !important;
+    }
+}
+
+/* True absolute top for Home button with safe area support */
+@media (max-width: 768px) {
+    #nav-home {
+        top: 0 !important;
+        margin-top: env(safe-area-inset-top) !important;
+        padding-top: 5px !important;
+    }
+}
+
+#main-actions button.active-delete {
+    color: #ef4444 !important; /* Red for delete mode */
+}
+
+#main-actions button.active-delete i {
+    filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5));
+}
+
+/* Logo and Home Button Layout */
+#app-logo {
+    position: fixed;
+    top: env(safe-area-inset-top);
+    left: 50%;
+    transform: translateX(-50%);
+    height: min(80px, 15vw);
+    width: auto;
+    z-index: 2100;
+    pointer-events: none;
+    filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9));
+}
+
+/* Home button to the top left */
+#nav-home {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top) + 10px) !important;
+    left: 15px !important;
+    transform: none !important;
+    width: 45px !important;
+    height: 45px !important;
+    background: rgba(15, 15, 15, 0.8) !important;
+    border: 2px solid #ffd700 !important;
+    color: #ffd700 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2200 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+@media (max-width: 768px) {
+    #app-logo {
+        top: calc(env(safe-area-inset-top) + 5px);
+        height: 60px;
+    }
+}
+
+/* Full-Screen Splash Screen */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1s ease-in-out, visibility 1s;
+}
+
+#splash-screen #app-logo {
+    position: static; /* Clear fixed positioning */
+    transform: none;
+    max-width: 300px;
+    width: 90vw;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
+}
+
+/* Center Home Button */
+#nav-home {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+/* Preview Popup Delete Button */
+.preview-delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(239, 68, 68, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s ease;
+    z-index: 2200;
+    pointer-events: auto;
+}
+
+.preview-delete-btn:hover {
+    background: #ef4444;
+    transform: scale(1.1) rotate(90deg);
+    border-color: #fff;
+}

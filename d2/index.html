@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diablo 2 Item Profile Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="splash-screen">
+        <img src="intro.png" id="app-logo" alt="Diablo 2 Item Manager">
+    </div>
+    <button id="nav-home" onclick="switchView('home')"><i class="fas fa-home"></i></button>
+
+    <div id="mobile-nav" class="mobile-only">
+        <button id="nav-left" onclick="switchView('left')"><i class="fas fa-chevron-left"></i></button>
+        <button id="nav-right" onclick="switchView('right')"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div id="app-wrapper">
+        <div id="app-container"></div>
+    </div>
+
+    <div id="main-actions">
+        <button onclick="changeBackground()"><i class="fas fa-image"></i><span>배경</span></button>
+        <button id="edit-btn" onclick="toggleEditMode()"><i class="fas fa-edit"></i><span>수정</span></button>
+        <button onclick="addSlot()"><i class="fas fa-plus"></i><span>추가</span></button>
+        <button id="delete-btn" onclick="toggleDeleteMode()"><i class="fas fa-trash"></i><span>삭제</span></button>
+        <button id="new-profile-btn" onclick="createNewProfile()" style="display:none;"><i class="fas fa-plus-circle"></i><span>나도 만들기</span></button>
+        <button id="share-btn" onclick="shareProfile()"><i class="fas fa-share-alt"></i><span>공유</span></button>
+    </div>
+
+    <div id="edit-instructions" style="position:fixed;bottom:10px;left:10px;z-index:999;background:rgba(0,0,0,0.9);color:#fff;padding:15px;border-radius:8px;font-size:12px;max-width:320px;display:none;">
+        <strong>🖱️ 드래그로 조절:</strong><br>
+        • 상자 드래그 → 위치 이동<br>
+        • 우측 하단 사각형 → 크기 조절<br>
+        • 변경 시 Console에 좌표 출력<br>
+        • <code>exportConfig()</code> → 전체 설정 복사
+    </div>
+
+    <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+    <div id="crop-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-crop-alt"></i> 이미지 크롭</h2>
+                <button class="close-modal" id="close-crop">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="crop-image" src="" alt="Crop preview">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancel-crop">
+                    <i class="fas fa-times"></i> 취소
+                </button>
+                <button class="btn btn-upload" id="confirm-upload">
+                    <i class="fas fa-upload"></i> 업로드
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewer-modal" class="modal viewer-modal">
+        <span class="viewer-close" id="close-viewer">&times;</span>
+        <img id="viewer-image" class="viewer-content" src="" alt="Preview">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <script>
+        console.log("hello");
+    </script>
+</body>
+</html>
