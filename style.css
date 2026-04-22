@@ -819,7 +819,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #000;
+    background: #000 !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -830,7 +830,8 @@ body {
 #splash-screen #app-logo {
     position: static; /* Clear fixed positioning */
     transform: none;
-    max-width: min(600px, 90vw);
+    max-width: 300px;
+    width: 90vw;
     height: auto;
     filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
 }
