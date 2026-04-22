@@ -424,9 +424,12 @@ function showFloatingPreview(slot, slotId, imageUrl) {
         delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
         delBtn.title = '이미지 삭제';
         delBtn.onclick = async (e) => {
+            alert("테스트 알림");
             e.stopPropagation();
-            await deleteSlotImage(slotId);
-            preview.remove();
+            if (confirm('이 이미지를 삭제하시겠습니까?')) {
+                await deleteSlotImage(slotId);
+                preview.remove();
+            }
         };
         preview.appendChild(delBtn);
     }
